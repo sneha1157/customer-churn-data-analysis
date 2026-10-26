@@ -1,4 +1,4 @@
-customer_id,gender,age,tenure_months,subscription_type,monthly_charges,total_charges,contract_type,support_tickets,payment_method,churn
+customerid,gender,age,tenuremonths,subscriptiontype,monthlycharges,totalcharges,contracttype,supporttickets,paymentmethod,churn
 CUST-1001,Female,34,12,Basic,49.99,599.88,Month-to-Month,3,Credit Card,Yes
 CUST-1002,Male,45,24,Pro,79.99,1919.76,One Year,1,Bank Transfer,No
 CUST-1003,Female,29,6,Basic,49.99,299.94,Month-to-Month,5,UPI,Yes

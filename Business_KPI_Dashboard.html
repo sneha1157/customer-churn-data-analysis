@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Business KPI Dashboard | Customer Churn</title>
+<script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+<style>
+:root{--bg:#0b1220;--panel:#121d31;--text:#edf3ff;--muted:#9eb0cc;--accent:#65d6ad;--pink:#ff7b91;--blue:#78aaff}
+*{box-sizing:border-box}body{margin:0;background:linear-gradient(135deg,#0b1220,#111c32);font-family:Inter,Segoe UI,Arial,sans-serif;color:var(--text)}
+main{max-width:1200px;margin:auto;padding:28px 18px 50px}.top{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap}
+h1{margin:0;font-size:clamp(26px,4vw,38px)}.sub{color:var(--muted);margin-top:8px}.tag{border:1px solid #31415e;border-radius:30px;padding:8px 12px;color:var(--accent);font-size:13px}
+.filters{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin:26px 0}
+label{display:block;color:var(--muted);font-size:12px;margin-bottom:7px}select{width:100%;background:#17253d;color:var(--text);border:1px solid #344766;padding:12px;border-radius:10px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px}
+.card,.chart{background:rgba(18,29,49,.94);border:1px solid #253653;border-radius:16px;padding:18px;box-shadow:0 10px 30px #0002}
+.klabel{color:var(--muted);font-size:13px}.value{font-size:30px;font-weight:750;margin:10px 0 4px}.note{font-size:12px;color:var(--muted)}
+.charts{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:14px;margin-top:16px}.chart{min-width:0}.chart h2{font-size:16px;margin:0 0 8px}.plot{height:310px}
+.footer{color:var(--muted);font-size:12px;line-height:1.6;margin-top:20px}
+</style></head><body><main>
+<div class="top"><div><h1>Business KPI Dashboard</h1><div class="sub">Customer churn • Retention insights • Interactive report</div></div><div class="tag">EDVYRO · DATA ANALYTICS TASK 2</div></div>
+<div class="filters">
+<div><label for="contract">CONTRACT TYPE</label><select id="contract"><option value="All">All contracts</option></select></div>
+<div><label for="tenure">TENURE GROUP</label><select id="tenure"><option value="All">All tenure groups</option><option value="0-12">0–12 months</option><option value="13-24">13–24 months</option><option value="25+">25+ months</option></select></div>
+<div><label for="payment">PAYMENT METHOD</label><select id="payment"><option value="All">All payment methods</option></select></div>
+</div>
+<div class="kpis">
+<div class="card"><div class="klabel">CHURN RATE</div><div class="value" id="churnRate">—</div><div class="note" id="churnNote">Share of customers who churned</div></div>
+<div class="card"><div class="klabel">RETENTION RATE</div><div class="value" id="retentionRate">—</div><div class="note">Share of customers retained</div></div>
+<div class="card"><div class="klabel">MONTHLY REVENUE AT RISK*</div><div class="value" id="revenueRisk">—</div><div class="note">Sum of monthly charges for churned customers</div></div>
+<div class="card"><div class="klabel">AVERAGE TENURE</div><div class="value" id="avgTenure">—</div><div class="note">Months across filtered customers</div></div>
+</div>
+<div class="charts">
+<div class="chart"><h2>Churn by Contract Type</h2><div class="plot" id="contractChart"></div></div>
+<div class="chart"><h2>Churn by Payment Method</h2><div class="plot" id="paymentChart"></div></div>
+<div class="chart"><h2>Customer Churn Distribution</h2><div class="plot" id="distributionChart"></div></div>
+<div class="chart"><h2>Average Support Tickets by Churn Status</h2><div class="plot" id="ticketsChart"></div></div>
+</div>
+<div class="footer">*Revenue at risk is a proxy based on monthly charges of churned customers; it is not lifetime revenue. This sample contains synthetic data and only a small number of records, so patterns are illustrative and should not be generalized. Filters update all KPI cards and charts. Charts require an internet connection to load Plotly.</div>
+</main>
+<script>
+const DATA = [{"customerid": "CUST-1001", "gender": "Female", "age": 34, "tenuremonths": 12, "subscriptiontype": "Basic", "monthlycharges": 49.99, "totalcharges": 599.88, "contracttype": "Month-to-Month", "supporttickets": 3, "paymentmethod": "Credit Card", "churn": "Yes"}, {"customerid": "CUST-1002", "gender": "Male", "age": 45, "tenuremonths": 24, "subscriptiontype": "Pro", "monthlycharges": 79.99, "totalcharges": 1919.76, "contracttype": "One Year", "supporttickets": 1, "paymentmethod": "Bank Transfer", "churn": "No"}, {"customerid": "CUST-1003", "gender": "Female", "age": 29, "tenuremonths": 6, "subscriptiontype": "Basic", "monthlycharges": 49.99, "totalcharges": 299.94, "contracttype": "Month-to-Month", "supporttickets": 5, "paymentmethod": "UPI", "churn": "Yes"}, {"customerid": "CUST-1004", "gender": "Male", "age": 52, "tenuremonths": 36, "subscriptiontype": "Enterprise", "monthlycharges": 149.99, "totalcharges": 5399.64, "contracttype": "Two Year", "supporttickets": 0, "paymentmethod": "Credit Card", "churn": "No"}, {"customerid": "CUST-1005", "gender": "Female", "age": 41, "tenuremonths": 8, "subscriptiontype": "Pro", "monthlycharges": 79.99, "totalcharges": 639.92, "contracttype": "Month-to-Month", "supporttickets": 4, "paymentmethod": "Debit Card", "churn": "Yes"}, {"customerid": "CUST-1006", "gender": "Male", "age": 31, "tenuremonths": 18, "subscriptiontype": "Basic", "monthlycharges": 49.99, "totalcharges": 899.82, "contracttype": "One Year", "supporttickets": 2, "paymentmethod": "UPI", "churn": "No"}, {"customerid": "CUST-1007", "gender": "Female", "age": 23, "tenuremonths": 3, "subscriptiontype": "Basic", "monthlycharges": 49.99, "totalcharges": 149.97, "contracttype": "Month-to-Month", "supporttickets": 6, "paymentmethod": "Credit Card", "churn": "Yes"}, {"customerid": "CUST-1008", "gender": "Male", "age": 60, "tenuremonths": 48, "subscriptiontype": "Enterprise", "monthlycharges": 149.99, "totalcharges": 7199.52, "contracttype": "Two Year", "supporttickets": 1, "paymentmethod": "Bank Transfer", "churn": "No"}, {"customerid": "CUST-1009", "gender": "Female", "age": 38, "tenuremonths": 15, "subscriptiontype": "Pro", "monthlycharges": 79.99, "totalcharges": 1199.85, "contracttype": "One Year", "supporttickets": 2, "paymentmethod": "Credit Card", "churn": "No"}, {"customerid": "CUST-1010", "gender": "Male", "age": 27, "tenuremonths": 4, "subscriptiontype": "Basic", "monthlycharges": 49.99, "totalcharges": 199.96, "contracttype": "Month-to-Month", "supporttickets": 4, "paymentmethod": "UPI", "churn": "Yes"}, {"customerid": "CUST-1011", "gender": "Female", "age": 49, "tenuremonths": 30, "subscriptiontype": "Enterprise", "monthlycharges": 149.99, "totalcharges": 4499.7, "contracttype": "Two Year", "supporttickets": 0, "paymentmethod": "Credit Card", "churn": "No"}, {"customerid": "CUST-1012", "gender": "Male", "age": 33, "tenuremonths": 14, "subscriptiontype": "Pro", "monthlycharges": 79.99, "totalcharges": 1119.86, "contracttype": "Month-to-Month", "supporttickets": 3, "paymentmethod": "Debit Card", "churn": "Yes"}, {"customerid": "CUST-1013", "gender": "Female", "age": 55, "tenuremonths": 22, "subscriptiontype": "Basic", "monthlycharges": 49.99, "totalcharges": 1099.78, "contracttype": "One Year", "supporttickets": 1, "paymentmethod": "Bank Transfer", "churn": "No"}, {"customerid": "CUST-1014", "gender": "Male", "age": 26, "tenuremonths": 2, "subscriptiontype": "Basic", "monthlycharges": 49.99, "totalcharges": 99.98, "contracttype": "Month-to-Month", "supporttickets": 5, "paymentmethod": "UPI", "churn": "Yes"}, {"customerid": "CUST-1015", "gender": "Female", "age": 43, "tenuremonths": 40, "subscriptiontype": "Enterprise", "monthlycharges": 149.99, "totalcharges": 5999.6, "contracttype": "Two Year", "supporttickets": 1, "paymentmethod": "Credit Card", "churn": "No"}];
+const money = n => new Intl.NumberFormat('en-IN',{style:'currency',currency:'INR',maximumFractionDigits:0}).format(n);
+const pct = n => (n*100).toFixed(1)+'%';
+const unique = key => [...new Set(DATA.map(d=>d[key]).filter(v=>v!==null&&v!==undefined&&v!==""))].sort();
+for(const v of unique('contract_type')){let o=document.createElement('option');o.value=v;o.textContent=v;document.querySelector('#contract').appendChild(o)}
+for(const v of unique('payment_method')){let o=document.createElement('option');o.value=v;o.textContent=v;document.querySelector('#payment').appendChild(o)}
+const get = (d,k) => d[k]===undefined||d[k]===null ? '' : d[k];
+function filtered(){return DATA.filter(d=>{
+ const c=document.querySelector('#contract').value,p=document.querySelector('#payment').value,t=document.querySelector('#tenure').value;
+ const tenure=Number(d.tenure_months);
+ return (c==='All'||get(d,'contract_type')===c)&&(p==='All'||get(d,'payment_method')===p)&&
+ (t==='All'||(t==='0-12'&&tenure<=12)||(t==='13-24'&&tenure>=13&&tenure<=24)||(t==='25+'&&tenure>=25));
+})}
+function layout(){return {paper_bgcolor:'rgba(0,0,0,0)',plot_bgcolor:'rgba(0,0,0,0)',font:{color:'#dce7fa'},margin:{l:45,r:12,t:12,b:60},legend:{orientation:'h',y:-.25},xaxis:{gridcolor:'#263650'},yaxis:{gridcolor:'#263650'},autosize:true}}
+function draw(){
+ const d=filtered(), yes=d.filter(x=>String(x.churn).toLowerCase()==='yes'), no=d.filter(x=>String(x.churn).toLowerCase()==='no'), n=d.length;
+ document.querySelector('#churnRate').textContent=n?pct(yes.length/n):'—';
+ document.querySelector('#retentionRate').textContent=n?pct(no.length/n):'—';
+ document.querySelector('#revenueRisk').textContent=money(yes.reduce((s,x)=>s+Number(x.monthly_charges||0),0));
+ document.querySelector('#avgTenure').textContent=n?(d.reduce((s,x)=>s+Number(x.tenure_months||0),0)/n).toFixed(1)+' mo':'—';
+ document.querySelector('#churnNote').textContent=yes.length+' churned / '+n+' customers';
+ const contract=uniqueFiltered(d,'contract_type');
+ Plotly.react('contractChart',[{type:'bar',x:contract,y:contract.map(c=>d.filter(x=>get(x,'contract_type')===c&&String(x.churn).toLowerCase()==='yes').length),name:'Churned',marker:{color:'#ff7b91'}},{type:'bar',x:contract,y:contract.map(c=>d.filter(x=>get(x,'contract_type')===c&&String(x.churn).toLowerCase()==='no').length),name:'Retained',marker:{color:'#65d6ad'}}],{...layout(),barmode:'stack'}, {responsive:true,displayModeBar:false});
+ const payment=uniqueFiltered(d,'payment_method');
+ Plotly.react('paymentChart',[{type:'bar',x:payment,y:payment.map(p=>d.filter(x=>get(x,'payment_method')===p&&String(x.churn).toLowerCase()==='yes').length),marker:{color:'#78aaff'}}],{...layout(),yaxis:{...layout().yaxis,title:'Churned customers'}},{responsive:true,displayModeBar:false});
+ Plotly.react('distributionChart',[{type:'pie',labels:['Churned','Retained'],values:[yes.length,no.length],hole:.62,textinfo:'label+percent',marker:{colors:['#ff7b91','#65d6ad']}}],{...layout(),showlegend:false,margin:{l:10,r:10,t:10,b:10}},{responsive:true,displayModeBar:false});
+ Plotly.react('ticketsChart',[{type:'bar',x:['Churned','Retained'],y:[avg(yes,'support_tickets'),avg(no,'support_tickets')],marker:{color:['#ff7b91','#65d6ad']},text:[avg(yes,'support_tickets').toFixed(1),avg(no,'support_tickets').toFixed(1)],textposition:'auto'}],{...layout(),yaxis:{...layout().yaxis,title:'Average tickets'}},{responsive:true,displayModeBar:false});
+}
+function avg(rows,key){return rows.length?rows.reduce((s,x)=>s+Number(x[key]||0),0)/rows.length:0}
+function uniqueFiltered(d,key){return [...new Set(d.map(x=>get(x,key)).filter(Boolean))].sort()}
+document.querySelectorAll('select').forEach(el=>el.addEventListener('change',draw));draw();
+</script></body></html>
